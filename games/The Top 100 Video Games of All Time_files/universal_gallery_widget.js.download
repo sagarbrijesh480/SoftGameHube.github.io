@@ -1,0 +1,632 @@
+var defaults = {
+    modal: '#modal',
+    invoker: '.gallery-container button',
+    iframe_class: 'iframe.gallery',
+    navigation: { 
+        right_arrow: '.right-arrow',
+        left_arrow: '.left-arrow'
+    },
+    sidebar: '.sidebar',
+    closebutton: '.close-button',
+    fullscreenbutton: '.fullscreen',
+    fullscreenslide: '.fullwidth',
+    switchtogridbutton: '.switch-to-grid',
+    minithumbutton: '.mini-thumb',
+    slidercontainer: '.slide-container',
+    slide: '.slide',
+    additionalcontainer: '.additional-container',
+    additionalinfo: '#additional-info',
+    singleslideprefix: '#slide',
+    imagecontainer: '.image-container',
+    pagecontainer: '.page-content',
+    imagetotal: '.image-total',
+    gallery_title: '.gallery-title',
+    json: Object,
+    translation: {
+        'images': 'images',
+        'of': 'OF',
+        'fullscreen': 'Fullscreen'
+    }
+}
+
+var ugw = null
+var xDown = null;                                                        
+var yDown = null;
+var touchEvent = false
+var is_backend = false
+var modal_opened = false
+var imageElementScale = 1;
+var start = {};
+var timeout, longtouch;
+
+function distance(event) {
+    var result = Math.hypot(event.touches[0].pageX - event.touches[1].pageX, event.touches[0].pageY - event.touches[1].pageY);
+    if (result) {
+        return result
+    } else {
+        return 0
+    }
+};
+
+class UGW {
+
+    constructor() {
+        let el;
+        let params;
+        this.parent = (window.parent) ? window.parent : null; 
+        this.target = (parent) ? parent.document : window.document
+        this.modal = this.target.querySelector(defaults.modal)
+        this.is_backend = this.target.querySelector('.cke')
+   
+      
+        if (this.is_backend) {
+            return;
+        }
+
+        for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+        }
+        
+        if (args.length === 1 && args[0].constructor && Object.prototype.toString.call(args[0]).slice(8, -1) === 'Object') {
+            params = args[0];
+        } else {
+            [el, params] = args;
+        }
+        
+        if (!params) params = {};
+        this.extend(defaults, params)
+        this.initModal(el)
+        this.main()
+        this.eventDispatcher()
+    }
+    
+    ugwtemplate = function() {
+        let json = defaults.json
+        let translation = defaults.translation
+        let html = `
+        <div class="slideshow">
+            <header>
+                <div>
+                    <button type="button" title="Fullscreen" aria-label="Fullscreen" class="icon-button fullscreen">
+                        <svg class="ign-icon icon-fullscreen" focusable="false" viewBox="0 0 28 22" aria-hidden="false" role="img" style="cursor: inherit; user-select: none; aspect-ratio: 1 / 1; width: 1em; height: 1em; display: inline-block; flex-shrink: 0; font-size: 1.5rem;"><title>Fullscreen</title><g transform="translate(-2 -5)" stroke="currentColor" stroke-width="2" fill="none" fill-rule="evenodd" stroke-linecap="round"><rect stroke-linejoin="round" x="3" y="6" width="26" height="20" rx="1.08333333"></rect><path d="M3 18h9c1.1045695 0 2 .8954305 2 2v6H5c-1.1045695 0-2-.8954305-2-2v-6z"></path></g></svg>
+                        <span>`+translation.fullscreen+`</span>
+                    </button>
+                </div>
+                <div>
+                    <div tabindex="0" class="user-tools-wrapper">
+                    </div>
+                    <button type="button" title="Image Gallery" aria-label="Image Gallery" class="switch-to-grid icon-button">
+                        <svg class="ign-icon icon-grid" focusable="false" viewBox="0 0 24 24" aria-hidden="false" role="img" style="cursor: inherit; user-select: none; aspect-ratio: 1 / 1; width: 1em; height: 1em; display: inline-block; flex-shrink: 0; font-size: 1.5rem;"><title>Image Gallery</title><g transform="translate(-4 -4)" stroke="currentColor" stroke-width="2" fill="none" fill-rule="evenodd"><rect x="5" y="5" width="8" height="8" rx="2"></rect><rect x="5" y="19" width="8" height="8" rx="2"></rect><rect x="19" y="5" width="8" height="8" rx="2"></rect><rect x="19" y="19" width="8" height="8" rx="2"></rect></g></svg>
+                    </button>
+                    <button type="button" title="Close" aria-label="Close" class="icon-button close-button">
+                        <svg class="ign-icon icon-close" focusable="false" viewBox="0 0 32 32" aria-hidden="false" role="img" style="cursor: inherit; user-select: none; aspect-ratio: 1 / 1; width: 1em; height: 1em; display: inline-block; flex-shrink: 0; font-size: 1.5rem;"><title>Close</title><path d="m2 2 28 28M30 2 2 30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                    </button>
+                </div>
+            </header>
+            <div class="slideshow-main">
+                <div class="image-container">
+                    <div class="slider">
+                        <div class="slides">
+                        `
+                        for (let i = 0; i < json.elements.length; i++) {
+                            let osrc = json.elements[i].src
+                            let position = i+1
+                            html += `
+                            <div id="slide-`+position+`" data-index="`+position+`" class="slide-container`; if (i==0) { html+=` active first` }; if ((i+1)==json.elements.length) { html+=` last`}; html+=`">`;
+                            html+=`
+                                <div class="slide-wrapper">
+                                    <div class="slide">
+                                        <picture>
+                                            <img class="progressive-image" data-src="`+osrc+`"`; if (i==0) { html+= `src="`+osrc+`">`};
+                            html+=`
+                                        </picture>
+                                    </div>
+                                </div>
+                            </div>`
+                        }
+                  
+                        if (json.elements.length > 1) {
+                        html +=`
+                            <div class="arrows-container">
+                                <button type="button" title="Previous" aria-label="Previous" class="jsx-1630177025 icon-button left-arrow">
+                                    <svg class="ign-icon icon-left-arrow" focusable="false" viewBox="0 0 24 18" aria-hidden="false" role="img" style="cursor: inherit; user-select: none; aspect-ratio: 1 / 1; width: 1em; height: 1em; display: inline-block; flex-shrink: 0; font-size: 1.5rem;"><title>Previous</title><path stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" d="M9.00000004 1.00000003L1.00000007 9 9 16.99999993M22.99999954 9.00000016l-20.99999996 1e-8"></path></svg>
+                                </button>
+                                <button type="button" title="Next" aria-label="Next" class="jsx-1630177025 icon-button right-arrow">
+                                    <svg class="ign-icon icon-right-arrow" focusable="false" viewBox="0 0 24 18" aria-hidden="false" role="img" style="cursor: inherit; user-select: none; aspect-ratio: 1 / 1; width: 1em; height: 1em; display: inline-block; flex-shrink: 0; font-size: 1.5rem;"><title>Next</title><path stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" transform="translate(12.000000, 9.000000) rotate(180.000000) translate(-12.000000, -9.000000)" d="M9.00000004 1.00000003L1.00000007 9 9 16.99999993M22.99999954 9.00000016l-20.99999996 1e-8"></path></svg>
+                                </button>
+                            </div>`
+                        }
+                        html +=`
+                        </div>
+                        
+                        
+                    </div>
+                    <div class="sidebar">
+                        <div id="imageInfo-0" class="image-info">
+                            <div class="image-count">
+                            <span class="counter">1</span> `+translation.of+" "+json.elements.length + `
+                            </div>
+                        </div>
+                        <div class="additional-info">`
+                        for (let i = 0; i < json.elements.length; i++) {
+                            caption = json.elements[i].caption;
+                            let position = i+1
+                            html+=`<div id="additional-info-`+position+`" data-index="`+position+`" class="additional-container `; if (i==0) {html+=` active first`}; if (i+1 == json.elements.lenght ) {html+=` last`}; html+=`">`
+                                        if (caption) { html+=`<p>`+caption+`</p>` }
+                            html+=`</div>`
+                        }
+                        html += `
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-content hidden">
+                    <div class="gallery-images">
+                    `
+                    
+                    for (let i = 0; i < json.elements.length; i++) {
+                        let osrc = json.elements[i].src
+                        let position = i+1
+                        html += `
+                        <button class="mini-thumb" aria-label="View Image" data-index="`+position+`">
+                            <div class="slide-wrapper">
+                                <img src="`+osrc+`" class="gallery-image">
+                            </div>
+                        </button>
+                        `
+                        }
+                    html+=`
+                    </div>
+                
+                </div>
+                <div class="image-total hidden">`+json.elements.length+` `+translation.images+`</div>
+            </div>
+            <div class="gallery-title">
+                <div>`+ json.title + `</div>
+            </div>
+        </div>
+        `;
+        return html
+    }
+
+    closeWindow = function(el) {
+        this.modal.style.display = "none";
+        this.modal.className = "";
+        this.modal.innerHTML = "";
+        this.target.querySelector('html').style.overflow = 'auto';
+        modal_opened = false
+        const root = document.querySelector(':root');
+        root.style.touchAction = 'auto'
+    }
+
+    initModal = function(el) {
+        ICMS.loadCSS("/s/js/universal_gallery_widget.css", null, this.parent);
+        if (!this.modal) {
+            this.modal = this.target.createElement("div")
+            this.modal.id = this.normalize(defaults.modal)
+            this.modal.classList.add(defaults.modal)
+            this.target.querySelector('body').append(this.modal)
+        }
+    }
+    
+    normalize = function(element) {
+        return element.replace('.','').replace('#','')
+    }
+
+    extend = function(obj, override) {
+        Object.keys(override).forEach(key => {
+            if (typeof override[key] === 'object' && override[key] !== null) {
+                    Object.assign(obj[key], override[key]);
+                    this.extend(obj[key], override[key])
+                }  else {
+                    obj[key] = override[key]
+                }
+            })      
+    }
+
+    prevSlide = function(el) {
+        touchEvent = true
+        var slide = this.target.querySelectorAll(defaults.slidercontainer), i;
+        if (slide.length == 1) { return }
+        for (i = 0; i < slide.length; ++i) {
+            slide[i].classList.remove('right')
+            slide[i].classList.add('left')
+        }
+        var current_slide = this.modal.querySelector(defaults.slidercontainer+'.active')
+        var current_info = this.modal.querySelector(defaults.additionalcontainer+'.active')
+       
+        if (current_slide.classList.contains('first')) {
+              var last_slide = this.modal.querySelector('.last')
+              var next_slide_index = last_slide.dataset.index
+        } else {
+              var next_slide_index = parseInt(current_slide.dataset.index)-1
+        }
+        current_slide.classList.remove('active');
+        current_info.classList.remove('active');
+
+        if (this.target.querySelector('.no-longer-active')) {
+            this.target.querySelector('.no-longer-active').classList.remove('no-longer-active')
+        }
+        current_slide.classList.add('no-longer-active')
+       
+        var img_active = this.modal.querySelector(defaults.singleslideprefix+'-'+next_slide_index).querySelector('img')
+        if (img_active){img_active.src =  img_active.dataset.src}
+        this.modal.querySelector(defaults.singleslideprefix+'-'+next_slide_index).classList.add('active');
+        this.modal.querySelector(defaults.additionalinfo+'-'+next_slide_index).classList.add('active');
+        if (next_slide_index % 4 === 0 && window?.zad?.renderNewAds){
+            window.zad.renderNewAds()
+            window.document.querySelector('.image-count').style.opacity = 0
+        } else if (next_slide_index%4 === 3){window.document.querySelector('.image-count').style.opacity = 1}
+
+        this.modal.querySelector('.counter').innerHTML = next_slide_index - Math.floor((next_slide_index / 4))
+        setTimeout (function () {
+            touchEvent = false
+        }, 500);
+       
+    }
+
+    nextSlide = function(el) {
+        touchEvent = true
+        var slide = this.target.querySelectorAll(defaults.slidercontainer), i;
+        if (slide.length == 1) { return }
+        for (i = 0; i < slide.length; ++i) {
+            slide[i].classList.remove('left')
+            slide[i].classList.add('right')
+        }
+        
+        var current_slide = this.modal.querySelector(defaults.slidercontainer+'.active')
+        var current_info = this.modal.querySelector(defaults.additionalcontainer+'.active')
+     
+        if (current_slide.classList.contains('last')) {
+              var next_slide_index = "1"
+        } else {
+              var next_slide_index = parseInt(current_slide.dataset.index)+1
+        }
+        current_slide.classList.remove('active');
+        current_info.classList.remove('active');
+        if (this.target.querySelector('.no-longer-active')) {
+            this.target.querySelector('.no-longer-active').classList.remove('no-longer-active')
+        }
+        current_slide.classList.add('no-longer-active')
+        
+        var img_active = this.modal.querySelector(defaults.singleslideprefix+'-'+next_slide_index).querySelector('img')
+        if (img_active){img_active.src =  img_active.dataset.src}
+        this.modal.querySelector(defaults.singleslideprefix+'-'+next_slide_index).classList.add('active');
+        this.modal.querySelector(defaults.additionalinfo+'-'+next_slide_index).classList.add('active');
+        if (next_slide_index % 4 === 0 && window?.zad?.renderNewAds){
+            window.zad.renderNewAds()
+            window.document.querySelector('.image-count').style.opacity = 0
+        } else if (next_slide_index%4 === 1){window.document.querySelector('.image-count').style.opacity = 1}
+        
+        this.modal.querySelector('.counter').innerHTML = next_slide_index - Math.floor((next_slide_index / 4))
+        setTimeout (function () {
+            touchEvent = false
+        }, 500);
+    }
+
+    fullScreen = function() {
+        if (this.modal.querySelector(defaults.sidebar).classList.contains('hidden')) {
+            this.modal.querySelector(defaults.sidebar).classList.remove('hidden')
+            let slide = this.modal.querySelectorAll(defaults.slidercontainer+' '+defaults.slide);
+            for (i = 0; i < slide.length; ++i) {
+                        slide[i].classList.remove(this.normalize(defaults.fullscreenslide))
+            }
+        } else {
+            this.modal.querySelector(defaults.sidebar).classList.add('hidden')
+            let slide = this.modal.querySelectorAll(defaults.slidercontainer+' '+defaults.slide);
+            for (i = 0; i < slide.length; ++i) {
+                        slide[i].classList.add(this.normalize(defaults.fullscreenslide))
+            }
+          
+        }
+    }
+
+    switchToGrid = function() {
+        let image_container = this.modal.querySelector(defaults.imagecontainer)
+        let gallery_container = this.modal.querySelector(defaults.pagecontainer)
+        let image_total = this.modal.querySelector(defaults.imagetotal)
+        let gallery_title = this.modal.querySelector(defaults.gallery_title)
+        let slideshow_main = this.modal.querySelector('.slideshow-main')
+        
+        if (slideshow_main.classList.contains('grid_on')) {
+            slideshow_main.classList.remove('grid_on')
+        } else {
+            slideshow_main.classList.add('grid_on')
+        }
+
+
+        
+        if (gallery_title.classList.contains('hidden')) {
+            gallery_title.classList.remove('hidden')
+        } else {
+            gallery_title.classList.add('hidden')
+        }
+
+        if (image_total.classList.contains('hidden')) {
+            image_total.classList.remove('hidden')
+        } else {
+            image_total.classList.add('hidden')
+        }
+        
+        if (image_container.classList.contains('hidden')) {
+            image_container.classList.remove('hidden')
+        } else {
+                image_container.classList.add('hidden')
+        }
+        if (gallery_container.classList.contains('hidden')) {
+                gallery_container.classList.remove('hidden')
+        } else {
+                gallery_container.classList.add('hidden')
+        }
+    }
+
+    miniThumb = function(element) {
+        let image_container = this.modal.querySelector(defaults.imagecontainer)
+        let gallery_container = this.modal.querySelector(defaults.pagecontainer)
+        let image_total = this.modal.querySelector(defaults.imagetotal)
+        let index = element.dataset.index
+        image_container.classList.remove('hidden')
+        gallery_container.classList.add('hidden')
+        
+        let slide = this.modal.querySelectorAll(defaults.slidercontainer);
+        for (i = 0; i < slide.length; ++i) {
+                    slide[i].classList.remove('active')
+                    slide[i].classList.remove('no-longer-active')
+        }
+        let img_active = this.modal.querySelector(defaults.singleslideprefix+'-'+index).querySelector('img')
+        img_active.src =  img_active.dataset.src
+        this.modal.querySelector(defaults.singleslideprefix+'-'+index).classList.add('active');
+        this.modal.querySelector(defaults.additionalcontainer+'.active').classList.remove('active');
+        this.modal.querySelector(defaults.additionalinfo+'-'+index).classList.add('active');
+        
+        this.modal.querySelector('.counter').innerHTML = index - Math.floor((index / 4))
+        if (index % 4 != 0) {
+            window.document.querySelector('.image-count').style.opacity = 1
+        }
+        image_total.classList.add('hidden')
+        let gallery_title = this.modal.querySelector(defaults.gallery_title)
+        gallery_title.classList.remove('hidden')
+       
+    }
+
+    keydown = function(event) {
+        /* event.preventDefault(); */
+        const key = event.key;
+        if (key == 'ArrowLeft') {
+            if (this.target.querySelector('body.rtl')) {
+                this.nextSlide()
+            } else {
+                this.prevSlide()
+            }
+        } else if (key == 'ArrowRight') {
+            if (this.target.querySelector('body.rtl')) {
+                this.prevSlide()
+            } else {
+                this.nextSlide()
+            }
+        } else if (key == 'Escape') { 
+            this.closeWindow()
+        }
+    }
+
+
+
+
+    touchStart = function(event) {
+        if (event.touches.length === 2) {
+            event.preventDefault(); // Prevent page scroll
+            // Calculate where the fingers have started on the X and Y axis
+            start.x = (event.touches[0].pageX + event.touches[1].pageX) / 2;
+            start.y = (event.touches[0].pageY + event.touches[1].pageY) / 2;
+            
+            start.distance = distance(event);
+            
+          } else {
+            const firstTouch = event.touches[0];                                      
+            xDown = firstTouch.clientX;                                      
+            yDown = firstTouch.clientY;   
+            timeout = setTimeout(function() {
+                longtouch = true;
+            }, 2);
+          }           
+    }
+
+    touchEnd = function(event) {
+            var em  = event.target.querySelector('img')
+            // console.log('touchend', event);
+            // Reset image to it's original format
+            em.style.transform = "";
+            em.style.WebkitTransform = "";
+            em.style.zIndex = "";
+            longtouch = false;
+            clearTimeout(timeout);
+    }
+    
+    touchMove = function(event) {
+        if (!modal_opened) { return }
+        if (touchEvent)  {return}
+        
+        if ( ! xDown || ! yDown ) {
+            return;
+        }
+
+        var em  = event.target.querySelector('img')
+        if (!em) {return}
+        if (event.touches.length === 2) {
+                                 event.preventDefault(); // Prevent page scroll
+                                  // Safari provides event.scale as two fingers move on the screen
+                                  // For other browsers just calculate the scale manually
+                                  let scale;
+                                  
+                                  if (event.scale) {
+                                    scale = event.scale;
+                                  } else {
+                                    const deltaDistance = distance(event);
+                                    scale = deltaDistance / start.distance;
+                                  }
+                                
+                                  imageElementScale = Math.min(Math.max(1, scale), 4);
+                                  
+                
+                                  // Calculate how much the fingers have moved on the X and Y axis
+                                  const deltaX = (((event.touches[0].pageX + event.touches[1].pageX) / 2) - start.x) * 2; // x2 for accelerated movement
+                                  const deltaY = (((event.touches[0].pageY + event.touches[1].pageY) / 2) - start.y) * 2; // x2 for accelerated movement
+                                  // Combine the existing transform with the additional calculations
+                                  const transform = `translate3d(${deltaX}px, ${deltaY}px, 0) scale(${imageElementScale})`;
+                                  em.style.transform = transform;
+                                  em.style.WebkitTransform = transform;
+                                  em.style.zIndex = "9999";
+                                 
+                                
+        } else if (event.touches.length === 1 && !em.style.transform){
+            if (!longtouch) {
+                return
+            }
+            var xUp = event.touches[0].clientX;                                    
+            var yUp = event.touches[0].clientY;
+
+            var xDiff = xDown - xUp;
+            var yDiff = yDown - yUp;
+        
+            if ( Math.abs( xDiff ) > Math.abs( yDiff ) ) {
+                if ( xDiff > 0 ) {
+                    if (this.target.querySelector('body.rtl')) {
+                        this.prevSlide()
+                    } else {
+                        this.nextSlide()
+                    }
+                } else {
+                    if (this.target.querySelector('body.rtl')) {
+                        this.nextSlide()
+                    } else {
+                        this.prevSlide()
+                    }
+                }       
+            }
+        }
+            
+    }            
+              
+    // Listen for event
+ 
+
+    eventDispatcher = function() {        
+        var right_arrow = this.normalize(defaults.navigation.right_arrow)
+        var left_arrow = this.normalize(defaults.navigation.left_arrow)
+        var closebutton = this.normalize(defaults.closebutton)
+        var fullscreen = this.normalize(defaults.fullscreenbutton)
+        var switchtogrid = this.normalize(defaults.switchtogridbutton)
+        var minithumb = this.normalize(defaults.minithumbutton)
+        
+        if (!document.querySelector(".backendMediaCnt")) {
+            //this.target.addEventListener('keydown', (evt) => this.keydown(evt))
+            window.addEventListener('keydown', (evt) => this.keydown(evt))
+        }
+        if (this.parent) {
+            this.target.addEventListener('touchstart', this.touchStart)
+        } else {
+            window.addEventListener('touchstart', this.touchStart)
+        }
+
+        if (this.parent) {
+            this.target.addEventListener('touchmove',(evt) => this.touchMove(evt))
+        } else {
+            window.addEventListener('touchmove', (evt) => this.touchMove(evt))
+        }
+
+        if (this.parent) {
+            this.target.addEventListener('touchend',(evt) => this.touchEnd(evt))
+        } else {
+            window.addEventListener('touchend', (evt) => this.touchEnd(evt))
+        }
+
+        var ugw = this
+        ICMS.on('body', 'click', function(e) {
+            let element  = e.target.closest('button')
+            if (!element) { return }
+            if (element.classList.contains(right_arrow) || element.name === right_arrow) {
+                if (ugw.target.querySelector('body.rtl')) {
+                    ugw.prevSlide()
+                } else {
+                    ugw.nextSlide()
+                }
+              
+            }
+            if (element.classList.contains(left_arrow) || element.name === left_arrow) {
+                if (ugw.target.querySelector('body.rtl')) {
+                    ugw.nextSlide()
+                } else {
+                    ugw.prevSlide()
+                }
+              
+            }
+            if (element.classList.contains(closebutton) || element.name === closebutton) {
+                ugw.closeWindow()
+            }
+            if (element.classList.contains(fullscreen) || element.name === fullscreen) {
+                ugw.fullScreen()
+            }
+            if (element.classList.contains(switchtogrid) || element.name === switchtogrid) {
+                ugw.switchToGrid()
+            }
+            if (element.classList.contains(minithumb) || element.name === minithumb) {
+                ugw.miniThumb(element)
+            }
+        })
+    }
+
+
+
+    main = function() {
+        let modal = this.modal
+        let target = this.target
+        var ugw = this;
+        ICMS.on(defaults.invoker, 'click', function(e) {
+            let is_anchor_text = this.closest('a[target=_blank]') ? true : false
+            if (is_anchor_text) { return }
+            e.preventDefault();
+            let url = this.dataset.gallery;
+            let position = this.dataset.position  
+            modal.style.display = "block";  
+            modal_opened = true
+            const root = document.querySelector(':root');
+            root.style.touchAction = 'pan-x pan-y'
+            target.querySelector('html').style.overflow = 'hidden';
+            let params = url
+            if (defaults.json && defaults.json.elements ) {
+                modal.innerHTML = ugw.ugwtemplate()
+                if (position) {
+                    let active_obj = modal.querySelectorAll('.active')
+                    for (var i=0; i < active_obj.length; i++) {
+                        active_obj[i].classList.remove('active')
+                    }
+                    position = parseInt(position)+1
+                    let img_active = modal.querySelector(defaults.singleslideprefix+'-'+position).querySelector('img')
+                    img_active.src =  img_active.dataset.src
+                    modal.querySelector(defaults.singleslideprefix+'-'+position).classList.add('active');
+                    modal.querySelector(defaults.additionalinfo+'-'+position).classList.add('active');
+                    modal.querySelector('.counter').innerHTML = position
+                }
+            } else {
+                ICMS.ajax(params, function(data) {
+                    modal.innerHTML += data;
+                    if (position) {
+                        let active_obj = modal.querySelectorAll('.active')
+                        for (var i=0; i < active_obj.length; i++) {
+                            active_obj[i].classList.remove('active')
+                        }
+                        position = parseInt(position)+1
+                        if (position >= 4){position = position+1}
+                        let img_active = modal.querySelector(defaults.singleslideprefix+'-'+position).querySelector('img')
+                        img_active.src =  img_active.dataset.src
+                        modal.querySelector(defaults.singleslideprefix+'-'+position).classList.add('active');
+                        modal.querySelector(defaults.additionalinfo+'-'+position).classList.add('active');
+                        modal.querySelector('.counter').innerHTML = position >= 4 ? position -1 : position
+                    }
+                })
+            }
+        })
+    }
+
+    
+}

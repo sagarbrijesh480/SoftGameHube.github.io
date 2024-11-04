@@ -1,0 +1,134 @@
+var $jscomp=$jscomp||{};$jscomp.scope={};$jscomp.ASSUME_ES5=!1;$jscomp.ASSUME_NO_NATIVE_MAP=!1;$jscomp.ASSUME_NO_NATIVE_SET=!1;$jscomp.SIMPLE_FROUND_POLYFILL=!1;$jscomp.ISOLATE_POLYFILLS=!1;$jscomp.FORCE_POLYFILL_PROMISE=!1;$jscomp.FORCE_POLYFILL_PROMISE_WHEN_NO_UNHANDLED_REJECTION=!1;$jscomp.defineProperty=$jscomp.ASSUME_ES5||"function"==typeof Object.defineProperties?Object.defineProperty:function(d,a,b){if(d==Array.prototype||d==Object.prototype)return d;d[a]=b.value;return d};
+$jscomp.getGlobal=function(d){d=["object"==typeof globalThis&&globalThis,d,"object"==typeof window&&window,"object"==typeof self&&self,"object"==typeof global&&global];for(var a=0;a<d.length;++a){var b=d[a];if(b&&b.Math==Math)return b}throw Error("Cannot find global object");};$jscomp.global=$jscomp.getGlobal(this);$jscomp.IS_SYMBOL_NATIVE="function"===typeof Symbol&&"symbol"===typeof Symbol("x");$jscomp.TRUST_ES6_POLYFILLS=!$jscomp.ISOLATE_POLYFILLS||$jscomp.IS_SYMBOL_NATIVE;$jscomp.polyfills={};
+$jscomp.propertyToPolyfillSymbol={};$jscomp.POLYFILL_PREFIX="$jscp$";var $jscomp$lookupPolyfilledValue=function(d,a,b){if(!b||null!=d){b=$jscomp.propertyToPolyfillSymbol[a];if(null==b)return d[a];b=d[b];return void 0!==b?b:d[a]}};$jscomp.polyfill=function(d,a,b,f){a&&($jscomp.ISOLATE_POLYFILLS?$jscomp.polyfillIsolated(d,a,b,f):$jscomp.polyfillUnisolated(d,a,b,f))};
+$jscomp.polyfillUnisolated=function(d,a,b,f){b=$jscomp.global;d=d.split(".");for(f=0;f<d.length-1;f++){var e=d[f];if(!(e in b))return;b=b[e]}d=d[d.length-1];f=b[d];a=a(f);a!=f&&null!=a&&$jscomp.defineProperty(b,d,{configurable:!0,writable:!0,value:a})};
+$jscomp.polyfillIsolated=function(d,a,b,f){var e=d.split(".");d=1===e.length;f=e[0];f=!d&&f in $jscomp.polyfills?$jscomp.polyfills:$jscomp.global;for(var c=0;c<e.length-1;c++){var h=e[c];if(!(h in f))return;f=f[h]}e=e[e.length-1];b=$jscomp.IS_SYMBOL_NATIVE&&"es6"===b?f[e]:null;a=a(b);null!=a&&(d?$jscomp.defineProperty($jscomp.polyfills,e,{configurable:!0,writable:!0,value:a}):a!==b&&(void 0===$jscomp.propertyToPolyfillSymbol[e]&&(b=1E9*Math.random()>>>0,$jscomp.propertyToPolyfillSymbol[e]=$jscomp.IS_SYMBOL_NATIVE?
+$jscomp.global.Symbol(e):$jscomp.POLYFILL_PREFIX+b+"$"+e),$jscomp.defineProperty(f,$jscomp.propertyToPolyfillSymbol[e],{configurable:!0,writable:!0,value:a})))};$jscomp.polyfill("Array.prototype.includes",function(d){return d?d:function(a,b){var f=this;f instanceof String&&(f=String(f));var e=f.length;b=b||0;for(0>b&&(b=Math.max(b+e,0));b<e;b++){var c=f[b];if(c===a||Object.is(c,a))return!0}return!1}},"es7","es3");
+(function(){function d(e){if(e){var c=a.document.querySelectorAll('[id^="_adTheme"]');if(c)for(var h=0;h<c.length;h++)c[h].remove();var {is_dark:r,secondaryColor:k,backgroundColor:m,headingColor:l,headingBackgroundColor:E,disqusBackgroundColor:F,textColor:g,sidebarTextandIcons:n,linkColor:t,verticalClipping:u,h2Clipping:G,border:v,wallpaper:H,sidebarDoodle:w,mobileHeaderDoodle:x,mobileheaderBackground:y,mobileheaderIGNLogoFill:z,destinationUrl:p,skinDestinationUrl:A}=e;c=`
+            /* General */
+            .page-wrapper {background-image: url(${H}); background-position: center top; background-size: auto;}
+            html#IGN2022 .page-content > div:not(.ad-wrapper) {
+                background: unset;
+            }
+            .zad:not(.billboard) {background:none;}
+            .vspotlight {padding: 0px 15px;}
+            .vspotlight .card {${u};}
+            section h2 {
+                color: ${l} !important;
+                padding: 5px 5px 8px 15px;
+                position: relative;
+                background-color: ${E};
+                border-radius: 5px;
+            }
+            html body #mainblock .page-content {max-width: 1200px;}
+            ${!window.MSStream&&/iPad|iPhone|iPod/.test(navigator.userAgent)?".page-wrapper{background-repeat: repeat-y;}":".page-wrapper{background-repeat: no-repeat;background-attachment:fixed;}"}
+        
+            /* Homepage */
+            .vspotlight article.card  h3.caption {background-color: ${g}7a !important; color: ${l}; border-radius: 5px;}
+            section.vspotlight article img,section.vspotlight article img, section.hspotlight article img, section.upcoming article img,section.broll img.thumb {border-radius: 0px;}
+            section.broll div.m a.comments {color: ${g};}
+            a.commentscount:before {filter: brightness(0) invert(${r?1:0});}
+            .vspotlight .card a {border-radius: 5px;}
+            .page-content section.hpcommerce div.tbl {background: ${k};}
+            
+        
+            /* Broll */
+            #mainblock div:not(.page-content) section.broll.wrap section.broll {background: ${m};color: ${g};}
+            #mainblock > section.broll {background: ${m};color: ${g}; max-width: 1220px; margin: 0 auto; box-sizing: border-box;}
+            section.broll .wrap {margin: 0px 15px;}
+            section.broll div.m time {color: ${g};}
+            section.broll article.PROMOTED {
+            background: unset !important;
+            }
+
+            /* Gallery */
+            section.main-content.gallery-content .image-details div, section.main-content.gallery-content .image-details h1 {
+                color: initial !important;
+            }
+        
+            /* Articles */
+            .article-publish-date{color: ${g}}
+            .article-publish-date g.has-stroke {
+                stroke: ${g};
+            }
+            a.evidence.opt-internal {color: ${l}; padding: 4px}
+            section.stripe {background: ${k}; border-top:none;}
+            .m, h3 a, .article-headline h1.strong, .ign-recommends-item span.item-title-link, h1#id_title, h3#id_deck {color: ${g} !important;}
+            .articlesummary ul {
+                color: black;
+            }
+            section.side-by-side.article-content {box-sizing: border-box;}
+            .wrapper .primary-object {margin-top:0px;}
+            .bottom-content .comment-count svg path, .ign-icon circle.has-stroke {stroke: ${l};}
+            .ign-icon path.has-fill {fill: ${l}; strike: ${l};}
+            /* Video page */
+            div#id_deck, h3.item-title {
+                color: white;
+            }
+        
+            #id_text .articlesummary, #id_text aside.editorsnote {background-color:white;}
+            .articleBody iframe[src*="/embed"].gallery {background-color:${m} !important;}
+            .article-review .page-content {
+                background: ${k} !important;
+                border-radius: 24px;
+            }
+            
+            .sidebar-page-header {background: ${k};}
+            #_themeMobileHeaderDoodle {
+                max-height: 90%;
+                margin-left: 0.5rem;
+            }
+
+            /* breadcrumb and recirculation */
+            ${r?".item-time-ago, a.article-object-link.opt-internal, .article-modified-date, .ign-icon.icon-checkmark{color: "+l+"};}":null}           
+        
+            /* Sidebar */
+            ${r?".sidebar-section a.icon-home:before{filter:invert(1);}":null}
+        
+            /* Disqus */
+            div#disqus_thread {border: 2px solid ${k}; padding: 4px;}
+            #disqus.disqus {background: ${F}; padding: 8px;}
+        
+            /* Keyword page */
+            .object-content .object-box {background-color: ${k} !important;}
+        
+            html#IGN2023 .articleBody .page-content > div:not(.ad-wrapper) {
+                background: transparent;
+            }
+        
+            /* Content list page */
+            #mainblock .wrap.herogrid {background: ${k};}
+            .slotter-item .badge-round.badge-inside.index-badge.featured {background-color: ${g}; color: ${l} !important; border-color: ${l};}
+            select#orderby, select#selectplatform {
+                color: black !important;
+            }
+            section.block.wrap.videofeatured {color: ${g};}
+            section.wrap.herogrid * {stroke: ${g};}
+            h3.headline.ghost-text {
+                color: ${g} !important;
+            }
+            section.block.wrap {box-sizing: border-box; background-color: ${m};}
+        
+            /* Fonts */
+            .author-names, .author-names *,
+            .reviews-author *, section.wrap.herogrid *:not(h2),
+            section.stripe *, .object-box *:not(.commerceLinks a), .object-details span,
+            .object-details li, div.info time  {color: ${g} !important;}
+        
+            /* Mediaqueries: no clipping on mobile */
+            @media (min-width: 930px) { 
+                .vspotlight .card, .articleHero img.hero.image, .page-content #id_text img, .vplayer:not(iframe) {${u}}
+                section.hspotlight h2, section.vspotlight h2, section.broll h2 { ${G} } 
+                section .wrap{padding-left: 0px; padding-right: 0px;}
+            }
+            `;m&&(c+=`#mainblock .page-content{max-width:1200px; background:${m}; margin: 0 auto; color:${g}; box-sizing: border-box;}
+            #mainblock #id_text .commerceblock-container h4.commerceblock-title{color:${g};}`);k&&(c+=`#ignheader, .object-summary, .object-summary-mini,.object-info.page-content,.object-details, #footer.limitedScroll, form#mainsearch {background: ${k} !important; color: ${g};}`);t&&(c+=`.article-section a {color: ${t};}`);y&&(c+=`.sidebar-page-header { background: ${y};}`);z&&(c+=`header.fixed-header .logo-link svg path { fill: ${z};}`);v&&(c+=`.card > a, .tbl .t a, .articleHero img.hero.image, .page-content #id_text img, .vplayer:not(iframe), img.hero {border:2px solid ${v};}`);
+n&&(c+=`
+                .logodate, div#ignheader a:not(.register-button) {color: ${n};}
+                div#ignheader svg:not(.icon-right-chevron):not(.icon-left-chevron) path {fill: ${n};}
+                .sidebar-main svg:not(.icon-right-chevron):not(.icon-left-chevron) path {stroke: ${n};}
+                a.lightbox.main.button.login-button {color:black !important;}
+            `);e=a.document.createElement("style");e.id="_adTheme_%ecid!";e.innerHTML+=c;w&&(c=a.document.getElementById("_themeSidebarDoodle"),c||(c=a.document.createElement("img"),c.id="_themeSidebarDoodle",e.innerHTML+="#_themeSidebarDoodle{width:inherit; cursor: pointer; padding: 0px 24px;}",h=a.document.querySelector(".sidebar-main"),h.parentNode.insertBefore(c,h)),c.src=w,c.removeEventListener("click",c.clickHandler),c.clickHandler=()=>window.open(...p),c.addEventListener("click",c.clickHandler));
+x&&(c=a.document.getElementById("_themeMobileHeaderDoodle"),c||(c=a.document.createElement("img"),c.id="_themeMobileHeaderDoodle",e.innerHTML+="#_themeMobileHeaderDoodle{width:50px; margin-left: 20px;}",a.document.querySelector(".sidebar-page-header").appendChild(c)),c.src=x,c.removeEventListener("click",c.clickHandler),c.clickHandler=()=>window.open(...p),c.addEventListener("click",c.clickHandler));var B,C,D;null==(B=a)||null==(C=B.document)||null==(D=C.head)||D.appendChild(e);["jp",".ign.com"].some(q=>
+a.location.href.includes(q+".ign.com")||window.location.href.includes(q+".icmsdev.ign.com"))&&768<a.innerWidth&&p&&(document.querySelector(".billboard.zad").style.maxWidth="970px",document.querySelector("#mainblock").addEventListener("click",function(q){q.target===document.querySelector("#mainblock")&&window.open(...(A?A:p))}))}}const a=window.top;let b,f;(null==(b=a)?0:null==(f=b.document)?0:f.querySelector("#sidebarHeader"))&&window===window.top&&window.addEventListener("message",function(e){"object"===
+typeof e.data&&e.data.hasOwnProperty("ZDAdType")&&"theme"===e.data.ZDAdType&&e.data.payload&&d(e.data.payload)},!1)})();

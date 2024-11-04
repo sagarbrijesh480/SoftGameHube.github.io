@@ -1,0 +1,655 @@
+#modal {
+    box-sizing: border-box;
+  }
+
+body.hasSkin #modal .page-content {
+    background: transparent;
+}
+
+.rtl #modal header .icon-close {
+    margin-right: 36px;
+    margin-left: 0;
+}
+
+.rtl #modal .icon-button > .ign-icon ~ span {
+    margin-left: 0px;
+    margin-right: 6px;
+}
+
+.rtl #modal #imageInfo-0 .image-count .counter {
+    unicode-bidi: embed;
+}
+
+.rtl #modal .image-count {
+    unicode-bidi: bidi-override;
+}
+
+.rtl #modal .additional-info p {
+    padding-right: 0;
+    padding-left: 20px;
+}
+
+.rtl #modal .gallery-title div {
+    margin: 0px 0px 12px 36px;
+}
+
+#modal { 
+    display: none; 
+    border: 1px black solid;
+    width: 100%; height: 100%; 
+    top:0; left:0; right: 0; bottom: 0;
+    background-color: rgba(0,0,0,0.9);
+    z-index: 9999999999;
+    padding: 0;
+    position: fixed;
+}
+
+#modal .sidebar.hidden {
+    display: none;
+}
+
+#modal .page-content.hidden {
+    display: none;
+}
+
+#modal .image-container.hidden {
+    display: none;
+}
+#modal .image-count {
+    position: relative;
+    display: block;
+}
+
+#modal .gallery-title {
+    margin: 12px 0px 0px;    
+    flex-shrink: 0;
+    width: 100%;
+    display: flex;
+    flex-flow: row wrap;
+    -webkit-box-align: center;
+    align-items: center;
+    min-height: 36px;
+    padding-top: 15px;
+}
+
+#modal .gallery-title.hidden {
+    display: none;
+}
+
+#modal .gallery-title div {
+    color: rgb(209, 213, 219);
+    font-weight: bold;
+    margin : 0px 36px 12px 0px;
+}
+
+#modal header button.button-guide, #modal header button.button--primary {
+    border-radius: 4px;
+    border: 2px solid #00000000;
+    cursor: pointer;
+    font-family: 'ars-maquette-web',sans-serif;
+    font-size: 14px;
+    line-height: 18px;
+    font-weight: 700;
+    -webkit-letter-spacing: -0.5px;
+    -moz-letter-spacing: -0.5px;
+    -ms-letter-spacing: -0.5px;
+    letter-spacing: -0.5px;
+    white-space: nowrap;
+    padding: 6px 24px;
+    -webkit-transition: color 0.2s ease,background 0.15s ease,border 0.15s ease;
+    transition: color 0.2s ease,background 0.15s ease,border 0.15s ease;
+    outline: none;
+    background-color: #bf1313;
+    color: #fff;
+}
+
+#modal .slideshow {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    inset: 0px;
+    padding: 0px 10px;
+}
+
+#modal header .icon-close {
+    margin-left: 36px;
+}
+
+#modal header {
+    min-height: 36px;
+    position: static;
+    width: unset;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    background-color: transparent;
+    z-index: 10;
+    margin: 18px 0px 36px;
+    flex-shrink: 0;
+    display: flex!important;
+    -webkit-box-align: center;
+    align-items: center;
+}
+
+#modal header > div {
+    flex: 1 1 0%;
+    display: flex;
+    -moz-box-align: center;
+    align-items: center;
+}
+
+#modal header > div:first-child .icon-button:first-child {
+    margin-right: 36px;
+}
+
+
+#modal header .user-tools-wrapper {
+    margin-right: 36px
+}
+
+#modal .user-tools-wrapper {
+    display: block;
+    position: relative;
+    padding-left: 24px;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+}
+
+#modal header > div:last-child {
+    -webkit-box-pack: end; 
+    justify-content: flex-end;
+}
+        
+#modal header .icon-button {
+    color: #fff;
+    -webkit-transition: color 0.2s ease;
+    transition: color 0.2s ease;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-align-items: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+}
+
+#modal .ign-icon {
+    background-size: 100%;
+    height: auto;
+    width: auto;
+}
+
+#modal .page-content {
+    top: 0;
+}
+
+#modal .icon-button > .ign-icon ~ span {
+    margin-left: 6px;
+}
+#modal .slideshow-main {
+    flex: 1 1 0%;
+    overflow: inherit;
+}
+
+#modal .slideshow-main.grid_on {
+    overflow-y: scroll;
+}
+
+#modal .image-container {
+    position: relative;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+}
+#modal .slider {
+    position: relative;
+    flex: 1 1 auto;
+}
+#modal .slides {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+    overflow: hidden;
+}
+
+@keyframes slide-right {
+    0% {
+        opacity: 0;
+        left: 100%;
+    }
+    100% {
+        opacity: 1;
+        left: 50%;
+    }
+}
+
+@keyframes slide-left {
+    0% {
+        opacity: 0;
+        left: 0%;
+    }
+    100% {
+        opacity: 1;
+        left: 50%;
+    }
+}
+
+@keyframes slide-more-right {
+    0% {
+        opacity: 1;
+        left: 50%;
+    }
+    100% {
+        opacity: 0;
+        left: 0%;
+    }
+}
+
+@keyframes slide-more-left {
+    0% {
+        opacity: 1;
+        left: 50%;
+    }
+    100% {
+        opacity: 0;
+        left: 100%;
+    }
+}
+
+#modal .slide-container.no-longer-active.right {
+    animation-name: slide-more-right;
+}
+
+#modal .slide-container.active.right {
+    animation-name: slide-right;
+}
+
+
+#modal .slide-container.active.left {
+    animation-name: slide-left;
+}
+
+#modal .slide-container.no-longer-active.left {
+    animation-name: slide-more-left;
+}
+
+#modal .slide-container.active {
+    z-index: 20002;
+    opacity: 1;
+}
+#modal .slide-container {
+    position: absolute;
+    top: 0px;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    padding: 0px;
+    margin: 0px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    -moz-box-align: center;
+    align-items: center;
+    animation-duration: 0.3s;
+    animation-timing-function: ease-out;
+}
+#modal .additional-info {
+    position: relative;
+}
+
+#modal .additional-info p {
+    /* word-break: break-all; */
+    padding-right: 50px;
+}
+
+#modal .additional-container {
+    position: absolute;
+    top: 0px;
+    left: 0%;
+    padding: 0px;
+    margin: 0px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    -moz-box-align: center;
+    align-items: center;
+    animation-duration: 0.3s;
+    animation-timing-function: ease-out;
+    color: #fff;
+    display: none
+}
+
+#modal .slide-wrapper {
+    position: relative;
+    width: 100%;
+}
+#modal .slide {
+    width: 100%;
+    text-align: center;
+    min-height: 20vh;
+    max-height: 70vh;
+    user-select: none;
+}
+
+#modal .slide.fullwidth {
+    max-height: 90vh;
+}
+
+#modal .slide.fullwidth .progressive-image{
+    max-height: 90vh;
+}
+
+#modal .slides .progressive-image {
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    object-fit: contain;
+    max-height: 40vh;
+    background-color: transparent;
+}
+
+
+#modal .sidebar {
+    display: flex;
+    flex-direction: column;
+    height: 45%;
+    z-index: 20002;
+}
+
+#modal .arrows-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+#modal .arrows-container .icon-button {
+    z-index: 20002;
+    position: absolute;
+    top: 46%;
+    margin: 0px 24px;
+    height: 56px;
+    width: 56px;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 50%;
+}
+
+#modal .icon-button {
+    color: #fff;
+    -webkit-transition: color 0.2s ease;
+    transition: color 0.2s ease;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-align-items: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+}
+
+#modal .arrows-container button {
+    border: 0;
+    background-color: transparent;
+    outline-width: 0;
+    padding: 0;
+    cursor: pointer;
+}
+
+#modal .arrows-container .left-arrow {
+    left: 0px;
+}
+
+#modal .arrows-container .right-arrow {
+    right: 0px;
+}
+
+#modal header button {
+    border: 0;
+    background-color: transparent;
+    outline-width: 0;
+    padding: 0;
+    cursor: pointer;
+}
+#modal .sidebar .image-info {
+    color: rgb(209, 213, 219);
+    line-height: 1.25;
+    font-size: 12px;
+}
+#modal .sidebar .ee, .sidebar .image-info {
+    overflow: hidden auto;
+    min-height: 20%;
+}
+
+#modal .gallery-images button {
+    border: 0;
+    background-color: transparent;
+    outline-width: 0;
+    padding: 0;
+    cursor: pointer;
+}
+
+#modal .gallery-images {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    grid-template-rows: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 6px;
+    place-items: center;
+    -moz-box-align: center;
+    background: transparent;
+}
+
+#modal .gallery-images .slide-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+#modal .gallery-images .slide-wrapper .gallery-image {
+    display: inline-block;
+    border-radius: 4px;
+    cursor: pointer;
+    object-fit: cover;
+    background-color: transparent;
+    width: 100px;
+    height: 100px;
+}
+
+#modal .fullscreen > span {
+    display: none;
+}
+
+#modal .image-total {
+    color: #fff;
+    margin: 12px 0px 0px;
+    width: 100%;
+    display: block;
+    margin: 0px auto 12px;
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+#modal .image-total.hidden {
+    display: none;
+} 
+
+#modal .page-content {
+    height: 95%;
+}
+
+
+#modal .additional-container.active {
+    display: block;
+}
+
+#modal .sidebar {
+    display: block;
+    z-index: 20002;
+    overflow-y: auto;
+  }
+
+@media (min-width: 930px) {
+    #modal .slideshow {
+        padding: 0px 36px;
+    }
+
+    #modal .sidebar {
+        display: flex;
+        flex-direction: column;
+        height: inherit;
+        z-index: 20002;
+    }
+
+    #modal .additional-container.active {
+        display: block;
+    }
+    
+
+    
+    #modal .fullscreen > span {
+        display: inline;
+    }
+    #modal .slideshow-main {
+        flex: 1 1 0%;
+        overflow: hidden;
+    }
+    .object-details .title {
+        padding-top: 0px;
+    }
+    .commerceLinks {
+        padding: 0;
+        margin: 0 0;
+        align-self: end;
+    }
+    
+    .gallery-container .images-list {
+        grid-template-columns: repeat(3,1fr);
+    }
+    
+    .fullscreen > span {
+        display: inline;
+    }
+
+    #modal .image-container {
+        flex-direction: unset;
+    }
+
+    #modal .slide-container {
+            height: 100%;
+    }
+
+
+    #modal .sidebar {
+        padding: 0px 0px 0px 36px;
+        width: 370px;
+        flex: 0 0 auto;
+        
+    }
+
+    #modal .slides .progressive-image { 
+        max-height: 70vh;
+    }
+
+}
+
+@media (hover: none) and (pointer: coarse) and (orientation: landscape) {
+    #modal header {
+        margin: 18px 0 0 10px;
+    }
+    #modal .slides .progressive-image {
+        max-height: 60vh;
+    }
+
+    #modal .gallery-title {
+        width: 80%;
+    }
+
+    #modal .additional-container.active {
+        display: block;
+    }
+
+    #modal .slide.fullwidth .progressive-image {
+        max-height: 65vh;
+    }
+
+    #modal .gallery-images {
+        position: relative;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+        grid-template-rows: repeat(auto-fill, minmax(50px, 1fr));
+        gap: 6px;
+        place-items: center;
+        -moz-box-align: center;
+        background: transparent;
+      }
+     
+      #modal .ign-icon.icon-logo { 
+            max-height: 30px;
+      }
+
+      #modal .page-content {
+          height: 90%;
+      }
+      #modal .gallery-images .slide-wrapper .gallery-image {
+        display: inline-block;
+        border-radius: 4px;
+        cursor: pointer;
+        object-fit: cover;
+        background-color: transparent;
+        width: 50px;
+        height: 50px;
+      }
+
+    #modal .image-container {
+      position: relative;
+      display: flex;
+      width: 100%;
+      height: 100%;
+      flex-direction: row;
+    }
+    #modal .sidebar {
+      display: block;
+      flex-direction: row;
+      width: 25%;
+      z-index: 20002;
+    }
+
+    #modal .additional-info {
+        padding: 20px;
+        word-break: break-all;
+    }
+
+    #modal .additional-info p {
+        padding: 0;
+    }
+
+    #modal .sidebar {
+        display: block;
+        flex-direction: row;
+        width: 25%;
+        z-index: 20002;
+        overflow-y: auto;
+        height: 100%;
+      }
+
+}
+
+/* Ads */
+#modal .slide-container:not(.active) div.zad {display: none;}
+#modal .slide-container .zad.halfpage {width: 300px; min-height: 250px;}
+button.mini-thumb:nth-child(4n) {
+    display: none;
+}
